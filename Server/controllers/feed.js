@@ -1,6 +1,16 @@
 exports.getPosts = (req, res, next) => {
   res.status(200).json({
-    posts: [{ title: "The First post", content: "This is the first post" }],
+    posts: [
+      {
+        _id: Math.random().toString(),
+        title: "The First post",
+        content: "This is the first post",
+        creator: {
+          name: "Himani",
+        },
+        createdAt: new Date(),
+      },
+    ],
   });
 };
 
