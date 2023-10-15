@@ -1,5 +1,8 @@
 require("dotenv").config();
-const expresss = require("express");
+
+const path = require("path");
+
+const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
@@ -7,10 +10,11 @@ const feedRoutes = require("./routes/feed");
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.2tfmflc.mongodb.net/${process.env.DB_DATABASE}`;
 
-const app = expresss();
+const app = express();
 
 // app.use(bodyParser.urlencoded()) x-www-form-urlencoded <form>
 app.use(bodyParser.json()); //application/json
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // Solving the CORS error. *(wildcard)all it allows access from anywhere.
@@ -23,6 +27,15 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+
+//error handling middleware.
+app.use((error, req, res, next) => {
+  const status = error.statusCode || 500;
+  const message = error.message;
+  res.status(status).json({
+    error: message,
+  });
+});
 
 mongoose
   .connect(MONGODB_URI)

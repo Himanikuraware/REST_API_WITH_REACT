@@ -21,18 +21,16 @@ exports.getPosts = (req, res, next) => {
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      // 422 status code :- Validation failed
-      message: "Validation failed, Please enter correct data",
-      errors: errors.array(),
-    });
+    const error = new Error("Validation failed, Please enter correct data");
+    error.statusCode = 422;
+    throw error;
   }
   const title = req.body.title;
   const content = req.body.content;
   const post = new Post({
     title: title,
     content: content,
-    imageUrl: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fpaperplanedesign.in%2Fproducts%2Fethnic-designer-beige-white-vintage-wallpaper&psig=AOvVaw3Ik4_KEGDwDMW3sfUhCR8G&ust=1697456016191000&source=images&cd=vfe&opi=89978449&ved=0CA8QjRxqFwoTCNDV3Mr694EDFQAAAAAdAAAAABAD',
+    imageUrl: "images/chocolates.jpg",
     creator: { name: "Himani" },
   });
   post
@@ -43,5 +41,10 @@ exports.createPost = (req, res, next) => {
         post: result,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };
