@@ -6,7 +6,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const socketIo = require("socket.io");
+const socketIo = require("./socket");
 
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
@@ -72,7 +72,7 @@ mongoose
   .then((result) => {
     const server = app.listen(8080);
     //Socket.io connection.
-    const io = socketIo(server, {
+    const io = socketIo.init(server, {
       cors: {
         origin: "http://localhost:3000",
         methods: ["GET, POST, PUT, PATCH, DELETE"],

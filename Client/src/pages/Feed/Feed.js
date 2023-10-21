@@ -36,9 +36,48 @@ const Feed = (props) => {
     };
 
     fetchStatus();
-    openSocket("http://localhost:8080");
     loadPosts();
+    const socket = openSocket("http://localhost:8080");
+    socket.on("posts", (data) => {
+      if (data.action === "create") {
+        addPost(data.post);
+      } else if (data.action === "update") {
+        updatePost(data.post);
+      }
+    });
   }, []);
+
+  const addPost = (post) => {
+    setPosts((prevPosts) => {
+      const updatedPosts = [...prevPosts];
+
+      if (postPage === 1) {
+        if (prevPosts.length >= 2) {
+          updatedPosts.pop();
+        }
+        updatedPosts.unshift(post);
+      }
+
+      return updatedPosts;
+    });
+
+    setTotalPosts((prevTotalPosts) => prevTotalPosts + 1);
+  };
+
+  const updatePost = (post) => {
+    setPosts((prevPosts) => {
+      const updatedPosts = [...prevPosts];
+      const updatedPostIndex = updatedPosts.findIndex(
+        (p) => p._id === post._id
+      );
+
+      if (updatedPostIndex > -1) {
+        updatedPosts[updatedPostIndex] = post;
+      }
+
+      return updatedPosts;
+    });
+  };
 
   const loadPosts = async (direction) => {
     if (direction) {
@@ -152,17 +191,6 @@ const Feed = (props) => {
         creator: resData.post.creator,
         createdAt: resData.post.createdAt,
       };
-
-      setPosts((prevState) => {
-        let updatedPosts = [...prevState];
-        if (editPost) {
-          const postIndex = prevState.findIndex((p) => p._id === editPost._id);
-          updatedPosts[postIndex] = post;
-        } else if (prevState.length < 2) {
-          updatedPosts = prevState.concat(post);
-        }
-        return updatedPosts;
-      });
 
       setIsEditing(false);
       setEditPost(null);
