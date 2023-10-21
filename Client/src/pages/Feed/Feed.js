@@ -1,4 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
+import openSocket from "socket.io-client";
+
 import Post from "../../components/Feed/Post/Post";
 import Button from "../../components/Button/Button";
 import FeedEdit from "../../components/Feed/FeedEdit/FeedEdit";
@@ -34,6 +36,7 @@ const Feed = (props) => {
     };
 
     fetchStatus();
+    openSocket("http://localhost:8080");
     loadPosts();
   }, []);
 
@@ -181,12 +184,15 @@ const Feed = (props) => {
     setPostsLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/feed/post/${postId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: props.token,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8080/feed/post/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: props.token,
+          },
+        }
+      );
 
       if (response.status !== 200 && response.status !== 201) {
         throw new Error("Deleting a post failed!");
