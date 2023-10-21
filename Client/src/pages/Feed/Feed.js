@@ -43,6 +43,8 @@ const Feed = (props) => {
         addPost(data.post);
       } else if (data.action === "update") {
         updatePost(data.post);
+      } else if (data.action === "delete") {
+        loadPosts();
       }
     });
   }, []);
@@ -227,8 +229,9 @@ const Feed = (props) => {
       }
 
       const resData = await response.json();
-      const updatedPosts = posts.filter((p) => p._id !== postId);
-      setPosts(updatedPosts);
+      // const updatedPosts = posts.filter((p) => p._id !== postId);
+      // setPosts(updatedPosts);
+      loadPosts();
       setPostsLoading(false);
       console.log(resData);
     } catch (err) {
