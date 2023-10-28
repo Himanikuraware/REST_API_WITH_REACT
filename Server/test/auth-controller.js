@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const AuthController = require("../controllers/auth");
 
-describe("Auth Controller - Login", () => {
+describe("Auth Controller", () => {
   const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.2tfmflc.mongodb.net/test-messages`;
 
   before(function (done) {
